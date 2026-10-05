@@ -1,0 +1,2 @@
+# A primeira entrega utiliza apenas a biblioteca padrão do Python.
+# Acrescentar dependências aqui apenas se vierem a ser necessárias.
