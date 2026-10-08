@@ -1,13 +1,15 @@
-class CRSproblem:
-    """Representa um problema de Scheduling de Recursos (CRS)."""
+import search
+
+class CRSproblem(search.Problem):
 
     def __init__(self):
+        self.initial = None
         self.S = None
         self.N = None
         self.tasks = []
 
     def load(self, fh):
-        """Carrega um problema CRS a partir de um ficheiro .dat."""
+        """Loads a problem from the opened file object fh."""
         lines = (
             line.strip()
             for line in fh
@@ -17,7 +19,7 @@ class CRSproblem:
         try:
             header = next(lines).split()
         except StopIteration as exc:
-            raise ValueError("O ficheiro não contém o cabeçalho S N") from exc
+            raise ValueError("O ficheiro não contem o cabeçalho S N") from exc
 
         if len(header) != 2:
             raise ValueError("O cabeçalho deve conter exatamente S e N")
@@ -45,20 +47,20 @@ class CRSproblem:
             except ValueError as exc:
                 raise ValueError(f"A tarefa {index} deve conter inteiros") from exc
 
-            if arrival < 0 or processing <= 0 or not 1 <= size <= cores or weight <= 0:
+            if arrival < 0 or processing <= 0 or size < 1 or size > cores or weight <= 0:
                 raise ValueError(f"A tarefa {index} tem valores inválidos")
 
             tasks.append((arrival, processing, size, weight))
 
         if next(lines, None) is not None:
-            raise ValueError("O ficheiro contém mais tarefas do que N")
+            raise ValueError("O ficheiro contem mais tarefas do que N")
 
         self.S = cores
         self.N = task_count
         self.tasks = tasks
 
     def cost(self, sol):
-        """Calcula o custo de uma solução."""
+        """Compute cost of solution sol."""
         total = 0
         for index, (arrival, processing, _size, weight) in enumerate(self.tasks):
             start_time, _start_core = sol[index]
@@ -67,28 +69,23 @@ class CRSproblem:
         return total
 
     def check(self, sol):
-        """Verifica se uma solução é válida."""
+        """Checks if solution sol satisfies problem constraints."""
         if not isinstance(sol, (list, tuple)) or len(sol) != self.N:
-            """Verifica se a solução é uma lista ou tupla com o tamanho correto (Se a solução tem N elementos)."""
             return False
 
         for index, placement in enumerate(sol):
             if not isinstance(placement, (list, tuple)) or len(placement) != 2:
-                """Verifica se cada elemento da solução é uma lista ou tupla com exatamente dois elementos (start_time, start_core)."""
                 return False
 
             start_time, start_core = placement
             if not isinstance(start_time, int) or not isinstance(start_core, int):
-                """Verifica se start_time e start_core são inteiros."""
                 return False
 
             arrival, processing, size, _weight = self.tasks[index]
             if start_time < arrival or start_core < 0 or start_core + size > self.S:
-                """Verifica se start_time é maior ou igual a arrival, start_core é não-negativo e start_core + size não excede o número total de núcleos S."""
                 return False
 
             for previous in range(index):
-                """Verifica se a tarefa atual não sobrepõe no tempo e nos núcleos com tarefas anteriores."""
                 previous_time, previous_core = sol[previous]
                 _arrival, previous_processing, previous_size, _weight = self.tasks[previous]
 
