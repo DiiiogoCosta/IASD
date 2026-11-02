@@ -1,12 +1,36 @@
 import search
 
-class CRSProblem(search.Problem):
+class CRSproblem(search.Problem):
 
     def __init__(self):
         self.initial = None
         self.S = None
         self.N = None
         self.tasks = []
+
+    def result(self, state, action):
+        """Returns the state that results from executing the given action
+        in the given state"""
+        pass
+    
+    def actions(self, state):
+        """Returns the list of actions that can be executed in the given
+        state"""
+        pass
+    
+    def goal_test(self, state):
+        """Returns True if the state is a goal"""
+        pass
+    
+    def path_cost(self, c, state1, action, state2):
+        """Returns the cost of a path that arrives at state2 from state1
+        via action, assuming cost c to get up to state1"""
+        pass
+    
+    def solve(self):
+        """Calls the uninformed search algorithm chosen.
+        Returns a solution using the specified format"""
+        pass
 
     def load(self, fh):
         """Loads a problem from the opened file object fh."""
