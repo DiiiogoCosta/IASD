@@ -1,6 +1,6 @@
 import search
 
-class CRSproblem(search.Problem):
+class CRSProblem(search.Problem):
 
     def __init__(self):
         self.initial = None
