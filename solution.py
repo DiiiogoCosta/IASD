@@ -1,12 +1,23 @@
 import search
 
-class CRSProblem(search.Problem):
+class CRSproblem(search.Problem):
 
     def __init__(self):
         self.initial = None
         self.S = None
         self.N = None
         self.tasks = []
+
+    def actions(self,state):
+        """Lista de tuplos"""
+        actions = [] 
+
+        for i in range(self.N):
+            if state[i] is None:
+                action =(i,self.tasks[i][0],0)
+                actions.append()
+
+
 
     def load(self, fh):
         """Loads a problem from the opened file object fh."""
@@ -57,6 +68,7 @@ class CRSProblem(search.Problem):
 
         self.S = cores
         self.N = task_count
+        self.initial = (None,)*self.N
         self.tasks = tasks
 
     def cost(self, sol):
