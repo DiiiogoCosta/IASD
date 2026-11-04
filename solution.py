@@ -8,15 +8,37 @@ class CRSproblem(search.Problem):
         self.N = None
         self.tasks = []
 
+
     def result(self, state, action):
         """Returns the state that results from executing the given action
         in the given state"""
         pass
     
+    def actionCabe(self, state, i,u,v):
+        pass
+    
     def actions(self, state):
         """Returns the list of actions that can be executed in the given
         state"""
-        pass
+        actions = [] 
+        
+        for i in range(self.N):
+            if state[i] is None:
+                a, p, s, w = self.tasks[i]
+                tempos ={a}
+                for j in range(self.N):
+                    if state[j] is not None:
+                        uj, vj = state[j][0], state[j][1]
+                        pj = self.tasks[j][1]
+                        fim = uj + pj
+                        if fim >= a:
+                            tempos.add(fim)      
+
+                v = 0
+                for u in tempos:
+                    actions.append((i, u, v))
+
+        return actions
     
     def goal_test(self, state):
         """Returns True if the state is a goal"""
@@ -31,6 +53,7 @@ class CRSproblem(search.Problem):
         """Calls the uninformed search algorithm chosen.
         Returns a solution using the specified format"""
         pass
+
 
     def load(self, fh):
         """Loads a problem from the opened file object fh."""
@@ -81,6 +104,7 @@ class CRSproblem(search.Problem):
 
         self.S = cores
         self.N = task_count
+        self.initial = (None,)*self.N
         self.tasks = tasks
 
     def cost(self, sol):
