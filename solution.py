@@ -8,6 +8,12 @@ class CRSproblem(search.Problem):
         self.N = None
         self.tasks = []
 
+
+    def result(self, state, action):
+        """Returns the state that results from executing the given action
+        in the given state"""
+        pass
+    
     def actionCabe(self, state, i,u,v):
         a, p, s, w = self.tasks[i]
         for j in range(self.N):
@@ -17,13 +23,10 @@ class CRSproblem(search.Problem):
                 
                 if( u<uj+pj and uj < u + p and v < vj + sj and vj < v + s):
                     return False
-        return True
-                    
-
-                
+        return True      
 
     def actions(self,state):
-        """Lista de tuplos"""
+        """Lista de tuplos"""#so para ter a certeza
         actions = [] 
 
         for i in range(self.N):
@@ -50,6 +53,20 @@ class CRSproblem(search.Problem):
 
         return actions
 
+    
+    def goal_test(self, state):
+        """Returns True if the state is a goal"""
+        pass
+    
+    def path_cost(self, c, state1, action, state2):
+        """Returns the cost of a path that arrives at state2 from state1
+        via action, assuming cost c to get up to state1"""
+        pass
+    
+    def solve(self):
+        """Calls the uninformed search algorithm chosen.
+        Returns a solution using the specified format"""
+        pass
 
 
     def load(self, fh):
