@@ -8,14 +8,30 @@ class CRSproblem(search.Problem):
         self.N = None
         self.tasks = []
 
+    def actionCabe(self, state, i,u,v):
+        
+
     def actions(self,state):
         """Lista de tuplos"""
         actions = [] 
 
         for i in range(self.N):
             if state[i] is None:
-                action =(i,self.tasks[i][0],0)
-                actions.append()
+                a, p, s, w = self.tasks[i]
+                tempos ={a}
+                for j in range(self.N):
+                    if state[j] is not None:
+                        uj, vj = state[j][0], state[j][1]
+                        pj = self.tasks[j][1]
+                        fim = uj + pj
+                        if fim >= a:
+                            tempos.add(fim)      
+
+                v = 0
+                for u in tempos:
+                    actions.append((i, u, v))
+
+        return actions
 
 
 
