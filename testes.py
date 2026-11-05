@@ -20,6 +20,7 @@ with open("ex2.dat") as fh:
 print("tasks:", prob.tasks)
 assert prob.result(((3,0), None, None), (2, 0, 0)) == ((3,0), None, (0,0))
 assert prob.goal_test(((3,0),(6,0),(0,0))) == True
+assert prob.goal_test(((3,0),None,(0,0))) == False
 path_cost_2 = prob.path_cost(3, ((3,0), None, None), (2, 0, 0), ((3,0), None, (0,0)))
 assert path_cost_2 == 9, f"esperava 9, deu {path_cost_2}"
 assert prob.cost([(3,0),(6,0),(0,0)]) == 21
