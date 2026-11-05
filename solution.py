@@ -12,7 +12,13 @@ class CRSproblem(search.Problem):
     def result(self, state, action):
         """Returns the state that results from executing the given action
         in the given state"""
-        pass
+        i, u, v = action
+        new_state_list = list(state)
+        try:
+            new_state_list[i] = (u, v)
+        except IndexError as exc:
+            raise IndexError("i da ação deve estar dentro do tamanho do state") from exc
+        return tuple(new_state_list)
     
     def actionCabe(self, state, i,u,v):
         a, p, s, w = self.tasks[i]
@@ -26,7 +32,8 @@ class CRSproblem(search.Problem):
         return True      
 
     def actions(self,state):
-        """Lista de tuplos"""#so para ter a certeza
+        """Returns the list of actions that can be executed in the given
+        state"""# para ter a certeza
         actions = [] 
 
         for i in range(self.N):
@@ -56,17 +63,23 @@ class CRSproblem(search.Problem):
     
     def goal_test(self, state):
         """Returns True if the state is a goal"""
-        pass
-    
+        for s in state:
+            if s is None: return False
+        return True
+
     def path_cost(self, c, state1, action, state2):
         """Returns the cost of a path that arrives at state2 from state1
         via action, assuming cost c to get up to state1"""
-        pass
-    
+        i, u, v = action
+        a, p, _, w = self.tasks[i]
+        return c + w * (u + p - a)
+
     def solve(self):
         """Calls the uninformed search algorithm chosen.
         Returns a solution using the specified format"""
-        pass
+        node = search.uniform_cost_search(self)
+        if node is not None: return list(node.state) 
+        else: raise ValueError("não pode ser None")
 
 
     def load(self, fh):
