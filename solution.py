@@ -23,7 +23,7 @@ class CRSproblem(search.Problem):
     def actionCabe(self, state, i,u,v):
         a, p, s, w = self.tasks[i]
         for j in range(self.N):
-            if state[j] is not None:
+            if state[j] != (-1, -1):
                 uj,vj = state[j]
                 pj,sj = self.tasks[j][1], self.tasks[j][2]
                 
@@ -37,12 +37,12 @@ class CRSproblem(search.Problem):
         actions = [] 
 
         for i in range(self.N):
-            if state[i] is None:
+            if state[i] == (-1, -1):
                 a, p, s, w = self.tasks[i]
                 tempos ={a}
                 cores = {0}
                 for j in range(self.N):
-                    if state[j] is not None:
+                    if state[j] != (-1, -1):
                         uj, vj = state[j][0], state[j][1]
                         pj = self.tasks[j][1]
                         fim = uj + pj
@@ -64,7 +64,7 @@ class CRSproblem(search.Problem):
     def goal_test(self, state):
         """Returns True if the state is a goal"""
         for s in state:
-            if s is None: return False
+            if s == (-1, -1): return False
         return True
 
     def path_cost(self, c, state1, action, state2):
@@ -78,8 +78,8 @@ class CRSproblem(search.Problem):
         """Calls the uninformed search algorithm chosen.
         Returns a solution using the specified format"""
         node = search.uniform_cost_search(self)
-        if node is not None: return list(node.state) 
-        else: raise ValueError("não pode ser None")
+        if node != (-1, -1): return list(node.state) 
+        else: raise ValueError("solução tem que estar toda preenchida com (u, v), u, v >= 0")
 
 
     def load(self, fh):
@@ -131,7 +131,7 @@ class CRSproblem(search.Problem):
 
         self.S = cores
         self.N = task_count
-        self.initial = (None,)*self.N
+        self.initial = ((-1, -1),)*self.N
         self.tasks = tasks
 
     def cost(self, sol):
