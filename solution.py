@@ -15,30 +15,44 @@ class CRSproblem(search.Problem):
         pass
     
     def actionCabe(self, state, i,u,v):
-        pass
-    
-    def actions(self, state):
-        """Returns the list of actions that can be executed in the given
-        state"""
+        a, p, s, w = self.tasks[i]
+        for j in range(self.N):
+            if state[j] is not None:
+                uj,vj = state[j]
+                pj,sj = self.tasks[j][1], self.tasks[j][2]
+                
+                if( u<uj+pj and uj < u + p and v < vj + sj and vj < v + s):
+                    return False
+        return True      
+
+    def actions(self,state):
+        """Lista de tuplos"""#so para ter a certeza
         actions = [] 
-        
+
         for i in range(self.N):
             if state[i] is None:
                 a, p, s, w = self.tasks[i]
                 tempos ={a}
+                cores = {0}
                 for j in range(self.N):
                     if state[j] is not None:
                         uj, vj = state[j][0], state[j][1]
                         pj = self.tasks[j][1]
                         fim = uj + pj
                         if fim >= a:
-                            tempos.add(fim)      
+                            tempos.add(fim)
+                        sj = self.tasks[j][2]
+                        acima= sj + vj
+                        if(acima+s <= self.S):
+                            cores.add(acima)
 
-                v = 0
                 for u in tempos:
-                    actions.append((i, u, v))
+                    for v in cores:
+                        if self.actionCabe(state, i, u, v):
+                            actions.append((i, u, v))
 
         return actions
+
     
     def goal_test(self, state):
         """Returns True if the state is a goal"""
