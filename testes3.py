@@ -1,12 +1,12 @@
 import time, search
-from solution import CRSproblem
+from solutionCopy import CRSproblem
 
-exemplos = {"ex1.dat": 20, "ex2.dat": 21, "ex3.dat": 29, "ex4.dat": 28}
-algoritmos =[search.breadth_first_tree_search,
-           search.breadth_first_graph_search,
-           search.depth_first_graph_search,
-           search.uniform_cost_search,
-           search.iterative_deepening_search,]
+
+exemplos = {"ex1.dat": 20, "ex2.dat": 21, "ex3.dat": 29, "ex4.dat": 28, "ex6.dat": 59} #
+algoritmos =[search.uniform_cost_search,
+            search.uniform_cost_tree_search,
+            search.breadth_first_graph_search,
+            search.depth_first_graph_search ] #search.breadth_first_tree_search, search.iterative_deepening_search,
 
 for alg in algoritmos:
     print()

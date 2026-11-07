@@ -1,5 +1,5 @@
 import search
-from solution import CRSproblem
+from solutionCopy import CRSproblem
 
 def carregar(nome):
     p = CRSproblem()
