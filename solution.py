@@ -32,62 +32,51 @@ class CRSproblem(search.Problem):
         return True    
 
     def actions(self, state):
-            actions = []
-            for i in range(self.N):
-                if state[i] != (-1, -1):
-                    continue
-                a, p, s, w = self.tasks[i]
-    
-                tempos = {a}
-                cores = {0}
-                for j in range(self.N):
-                    if state[j] != (-1, -1):
-                        uj, vj = state[j]
-                        pj, sj = self.tasks[j][1], self.tasks[j][2]
-                        if uj + pj >= a:
-                            tempos.add(uj + pj)
-                        if vj + sj + s <= self.S:
-                            cores.add(vj + sj)
-    
-                for u in sorted(tempos):
-                    acoes_u = [(i, u, v) for v in cores if self.actionCabe(state, i, u, v)]
-                    if acoes_u:
-                        actions.extend(acoes_u)
-                        break   # só o primeiro instante em que a tarefa cabe
-    
-            return actions
-    
-
-    '''def actions(self,state):
-        """Returns the list of actions that can be executed in the given
-        state"""# para ter a certeza
-        actions = [] 
+        actions = []
+        scheduled = [
+            (j, state[j][0], state[j][1])
+            for j in range(self.N)
+            if state[j] != (-1, -1)
+        ]
+        seen_identical = set()
 
         for i in range(self.N):
-            if state[i] == (-1, -1):
-                a, p, s, w = self.tasks[i]
-                tempos ={a}
-                cores = {0}
-                for j in range(self.N):
-                    if state[j] != (-1, -1):
-                        uj, vj = state[j][0], state[j][1]
-                        pj = self.tasks[j][1]
-                        fim = uj + pj
-                        if fim >= a:
-                            tempos.add(fim)
-                        sj = self.tasks[j][2]
-                        acima= sj + vj
-                        if(acima+s <= self.S):
-                            cores.add(acima)
+            if state[i] != (-1, -1):
+                continue
 
-                for u in tempos:
-                    for v in cores:
-                        if self.actionCabe(state, i, u, v):
-                            actions.append((i, u, v))
+            a, p, s, w = self.tasks[i]
+            signature = (a, p, s, w)
+            if signature in seen_identical:
+                continue
+            seen_identical.add(signature)
 
-        return actions'''
+            times = {a}
+            for j, uj, _ in scheduled:
+                end = uj + self.tasks[j][1]
+                if end >= a:
+                    times.add(end)
 
-    
+            for u in sorted(times):
+                # A left-shifted placement starts either at core zero or just
+                # after a task that overlaps this task's execution interval.
+                active = [
+                    (vj, vj + self.tasks[j][2])
+                    for j, uj, vj in scheduled
+                    if u < uj + self.tasks[j][1] and uj < u + p
+                ]
+                core_starts = {0, *(end for _, end in active)}
+                placements = []
+                for v in sorted(core_starts):
+                    if v + s > self.S:
+                        continue
+                    if all(v + s <= left or right <= v for left, right in active):
+                        placements.append((i, u, v))
+
+                if placements:
+                    actions.extend(placements)
+                    break
+
+        return actions
     def goal_test(self, state):
         """Returns True if the state is a goal"""
         for s in state:
@@ -104,9 +93,12 @@ class CRSproblem(search.Problem):
     def solve(self):
         """Calls the uninformed search algorithm chosen.
         Returns a solution using the specified format"""
-        node = search.uniform_cost_search(self) #queriamos Uniforme cost mas com tree search :(((
+        node = search.uniform_cost_search(self)
+        if node is None:
+            raise ValueError("não foi encontrada uma solução")
         for s in node.state:
-            if s == (-1, -1): raise ValueError("solução tem que estar toda preenchida com (u, v), u, v >= 0") 
+            if s == (-1, -1):
+                raise ValueError("solução tem que estar toda preenchida com (u, v), u, v >= 0")
         return list(node.state)
 
 
