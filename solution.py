@@ -33,50 +33,52 @@ class CRSproblem(search.Problem):
 
     def actions(self, state):
         actions = []
-        scheduled = [
+        agendadas = [
             (j, state[j][0], state[j][1])
             for j in range(self.N)
             if state[j] != (-1, -1)
         ]
-        seen_identical = set()
+        tarefas_iguais = set()
 
         for i in range(self.N):
             if state[i] != (-1, -1):
                 continue
 
             a, p, s, w = self.tasks[i]
-            signature = (a, p, s, w)
-            if signature in seen_identical:
+            tarefa = (a, p, s, w)
+            if tarefa in tarefas_iguais:
                 continue
-            seen_identical.add(signature)
+            tarefas_iguais.add(tarefa)
 
-            times = {a}
-            for j, uj, _ in scheduled:
-                end = uj + self.tasks[j][1]
-                if end >= a:
-                    times.add(end)
+            tempos = {a}
+            for j, uj, vj in agendadas:
+                fim = uj + self.tasks[j][1]
+                if fim >= a:
+                    tempos.add(fim)
 
-            for u in sorted(times):
-                # A left-shifted placement starts either at core zero or just
-                # after a task that overlaps this task's execution interval.
-                active = [
+            for u in sorted(tempos):
+                ativas = [
                     (vj, vj + self.tasks[j][2])
-                    for j, uj, vj in scheduled
+                    for j, uj, vj in agendadas
                     if u < uj + self.tasks[j][1] and uj < u + p
                 ]
-                core_starts = {0, *(end for _, end in active)}
-                placements = []
-                for v in sorted(core_starts):
+                cores = {0}
+                for inicio, fim in ativas:
+                    cores.add(fim)
+
+                acoes_u = []
+                for v in sorted(cores):
                     if v + s > self.S:
                         continue
-                    if all(v + s <= left or right <= v for left, right in active):
-                        placements.append((i, u, v))
+                    if all(v + s <= inicio or fim <= v for inicio, fim in ativas):
+                        acoes_u.append((i, u, v))
 
-                if placements:
-                    actions.extend(placements)
-                    break
+                if acoes_u:
+                    actions.extend(acoes_u)
+                    break   # só o primeiro instante em que a tarefa cabe
 
         return actions
+
     def goal_test(self, state):
         """Returns True if the state is a goal"""
         for s in state:
